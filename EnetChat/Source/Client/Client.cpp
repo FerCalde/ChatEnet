@@ -4,6 +4,10 @@
 #include <iostream>
 #include "Net/factoryenet.h"
 
+static bool bDebugMsg = true;
+
+void printLogs(bool* _bDebugMsg, const char* _msg);
+void printLogs(const char* _msg);
 
 namespace
 {
@@ -60,4 +64,20 @@ int main()
 	delete pFactory;
 	pFactory = nullptr;
 	
+}
+
+void printLogs(bool* _bDebugMsg, const char* _msg)
+{
+	if (_bDebugMsg)
+	{
+		std::cout << "\n\n" << _msg << "\n\n";
+	}
+
+}
+void printLogs(const char* _msg)
+{
+	if (bDebugMsg)
+	{
+		std::cout << "\n\n" << _msg << "\n\n";
+	}
 }

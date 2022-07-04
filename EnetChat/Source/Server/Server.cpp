@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Net/factoryenet.h"
+#include "Net/buffer.h"
 
 namespace
 {
@@ -10,17 +11,29 @@ namespace
 	const int s_iMaxClients = 10;
 }
 
+static bool bDebugMsg = true;
+
+void printLogs(bool* _bDebugMsg, const char* _msg);
+void printLogs(const char* _msg);
+void printReceiveMsg(const char* _msg);
+
+
 int main()
 {
 	//Create Factory and Server
 	Net::CFactory* pFactory = new Net::CFactoryEnet();
 	Net::CServer* pServer = pFactory->buildServer();
+	
+	printLogs("Server: Creating...");
 
 	//Init Server
 	pServer->init(s_iPort, s_iMaxClients);
+	printLogs("Server: Init...");
+	
 	//Receive Data-packages
 	std::vector<Net::CPacket*> aPackets; //ptr a los paquetes que recibe y almacena del service //No corta el flujo.
-
+	char sMessage[128]{ '\0' };
+	
 	do
 	{
 		pServer->service(aPackets);
@@ -37,6 +50,15 @@ int main()
 			}break;
 			case Net::DATA:
 			{
+				//Data Buffer from the Received Packet
+				Net::CBuffer oData; //To Read
+				oData.write(pPacket->getData(), pPacket->getDataLength());
+				
+				oData.reset();
+				oData.read(sMessage, oData.getSize());
+				sMessage[oData.getSize()] = '\0';
+				
+				printReceiveMsg(sMessage);
 
 			}break;
 			case Net::DISCONNECTION:
@@ -67,3 +89,28 @@ int main()
 
 }
 
+
+void printLogs(bool* _bDebugMsg, const char* _msg)
+{
+	if (_bDebugMsg)
+	{
+		std::cout << "\n\n" << _msg << "\n\n";
+	}
+
+}
+void printLogs(const char* _msg)
+{
+	if (bDebugMsg)
+	{
+		std::cout << "\n\n" << _msg << "\n\n";
+	}
+}
+
+
+void printReceiveMsg(const char* _msg)
+{
+	if (bDebugMsg)
+	{
+		std::cout << "\nServer:\n\tReceived text : " << _msg << "\n";
+	}
+}
