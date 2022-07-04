@@ -23,17 +23,17 @@ int main()
 	//Create Factory and Server
 	Net::CFactory* pFactory = new Net::CFactoryEnet();
 	Net::CServer* pServer = pFactory->buildServer();
-	
+
 	printLogs("Server: Creating...");
 
 	//Init Server
 	pServer->init(s_iPort, s_iMaxClients);
 	printLogs("Server: Init...");
-	
+
 	//Receive Data-packages
 	std::vector<Net::CPacket*> aPackets; //ptr a los paquetes que recibe y almacena del service //No corta el flujo.
 	char sMessage[128]{ '\0' };
-	
+
 	do
 	{
 		pServer->service(aPackets);
@@ -43,7 +43,7 @@ int main()
 			Net::CPacket* pPacket = *it;
 			switch (pPacket->getType())
 			{
-			
+
 			case Net::CONNECTION:
 			{
 				printLogs("Server: Connection from a Client");
@@ -53,12 +53,15 @@ int main()
 				//Data Buffer from the Received Packet
 				Net::CBuffer oData; //To Read
 				oData.write(pPacket->getData(), pPacket->getDataLength());
-				
+
 				oData.reset();
 				oData.read(sMessage, oData.getSize());
 				sMessage[oData.getSize()] = '\0';
-				
+				//Make stuff with Message Data Received
 				printReceiveMsg(sMessage);
+
+				//Send Message to all Clients
+				pServer->sendAll(pPacket->getData(), pPacket->getDataLength(), 0, true);
 
 			}break;
 			case Net::DISCONNECTION:
@@ -66,17 +69,19 @@ int main()
 				printLogs("Server: Disconnection from a Client");
 
 			}break;
-			
+
 			}
-			
+
 			delete pPacket;
 
 		}
 
 		aPackets.clear(); //Clean Msg List
 
-	} while (true);
+	} while (strcmp(sMessage, "exit") != 0);
 
+
+	
 	//Close and Clean Server & Factory
 	pServer->release();
 	delete pServer;
