@@ -46,7 +46,7 @@ int main()
 			
 			case Net::CONNECTION:
 			{
-
+				printLogs("Server: Connection from a Client");
 			}break;
 			case Net::DATA:
 			{
@@ -63,6 +63,7 @@ int main()
 			}break;
 			case Net::DISCONNECTION:
 			{
+				printLogs("Server: Disconnection from a Client");
 
 			}break;
 			
@@ -70,9 +71,6 @@ int main()
 			
 			delete pPacket;
 
-			/*Net::CPacket* pPacket = *it;
-			std::cout << "Packet received: " << pPacket->getData() << std::endl;
-			delete pPacket;*/
 		}
 
 		aPackets.clear(); //Clean Msg List
