@@ -73,17 +73,19 @@ int main()
 			}break;
 			}
 
+			delete pPacket;
 		}
 
-
+		aPackets.clear(); //Clean Msg List
+		
+		
 		//SendMessage to Server
-		fgets(sMessage, 127, stdin);
+		fgets(sMessage, 127, stdin); //Here the app will wait for the message to be sent. TODO: UPGRADE MultiThreads.
 		char* sEndLine = strchr(sMessage, '\n');
 		*sEndLine = '\0';
 
 		//Create a package to send Message
 		//Net::CPacket* oMessagePacket(Net::DATA, )
-
 		pClient->sendData(pConnection, sMessage, strlen(sMessage), 0, true);
 
 	} while (strcmp(sMessage, "closeserver") != 0);
