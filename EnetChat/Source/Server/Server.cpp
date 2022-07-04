@@ -103,15 +103,15 @@ int main()
 					m_tIDName[xClientID] = sCopy;
 					std::cout << "\n" << sMessage << " is Connected!\n";
 
-					for (auto rClient : m_tIDName)
+					for (auto& rClient : m_tIDName)
 					{
 						Net::CBuffer oAuxData;
 						EMessageType eAuxMessageType = EMessageType::SetName;
 						oAuxData.write(&eAuxMessageType, sizeof(eAuxMessageType));
 						oAuxData.write(&(rClient.first), sizeof(rClient.first));
-						oAuxData.write(&(rClient.second), sizeof(rClient.second));
+						oAuxData.write(rClient.second, sizeof(rClient.second));
 						pServer->sendData(pPacket->getConnection(), oAuxData.getData(), oAuxData.getSize(),0, true);
-	
+						
 					}
 
 				}break;
